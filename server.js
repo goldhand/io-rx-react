@@ -2,14 +2,25 @@ import path from 'path';
 import express from 'express';
 import { Server } from 'http';
 import socketIO from 'socket.io';
+import { Observable } from 'rxjs';
 
 const app = express();
 const server = new Server(app);
 const io = socketIO(server);
-const host = process.env.HOST || '127.0.0.1';
 const port = process.env.PORT || 3000;
 const { log } = console;
 
+
+const observableIO = (socket, event) => Observable.create(
+    (observer) => {
+      socket.on(event, (data) => {
+        observer.next(data);
+      });
+      return {
+        dispose: socket.close,
+      };
+    }
+);
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
@@ -20,11 +31,15 @@ io.on('connection', (socket) => {
   user += 1;
   io.emit('new connection', { user });
 
-  socket.on('btn click', (action) => {
-    io.emit('btn click', action);
-  });
+  const clickStream = observableIO(socket, 'btn click');
+
+  clickStream.subscribe(
+    (action) => { io.emit('btn click', action); },
+    (err) => { log(err); },
+    () => { log('done'); },
+  );
 });
 
-server.listen(port, host, () => {
-  log(`listening on ${host}:${port}`);
+server.listen(port, () => {
+  log(`listening on *${port}`);
 });
