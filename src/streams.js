@@ -6,7 +6,7 @@ export default (io) => {
   let user = 0;
   io.on('connection', (socket) => {
     user += 1;
-    io.emit('new connection', { user });
+    io.emit('action', { user, type: 'CONNECTION' });
 
     const actionStream = observableIO(socket, 'action');
 

@@ -9,7 +9,6 @@ const btnElem = document.getElementById('btn-up');
 
 let activeUser;
 
-
 function writeLog(msg) {
   const msgElem = document.createElement('li');
   msgElem.innerText = msg;
@@ -17,27 +16,20 @@ function writeLog(msg) {
   logElem.appendChild(msgElem);
 }
 
-const connectionStream = observableIO(socket, 'new connection');
-connectionStream.subscribe(
-  (action) => {
-    if (!activeUser) activeUser = action.user;
-    writeLog(`new connection: ${action.user}`);
-  }
-);
-// socket.on('new connection', (action) => {
-//   if (!activeUser) activeUser = action.user;
-//   writeLog(`new connection: ${action.user}`);
-// });
-
 const actionStream = observableIO(socket, 'action');
 actionStream.subscribe(
   (action) => {
-    writeLog(`button clicked by ${action.user}`);
+    switch (action.type) {
+      case 'CONNECTION':
+        if (!activeUser) activeUser = action.user;
+        return writeLog(`new connection: ${action.user}`);
+      case 'MOVE_UP':
+        return writeLog(`button clicked by ${action.user}`);
+      default:
+        return writeLog(action);
+    }
   }
 );
-// socket.on('action', (action) => {
-//   writeLog(`button clicked by ${action.user}`);
-// });
 
 const btnStream = Observable.fromEvent(btnElem, 'click');
 btnStream.subscribe((e) => {
@@ -47,10 +39,3 @@ btnStream.subscribe((e) => {
     type: 'MOVE_UP',
   });
 });
-// btnElem.addEventListener('click', (e) => {
-//   e.preventDefault();
-//   socket.emit('action', {
-//     user: activeUser,
-//     type: 'MOVE_UP',
-//   });
-// });
