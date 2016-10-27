@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/.bin/babel-node server.js",
+    "start": "./node_modules/.bin/babel-node ./src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -13,7 +13,10 @@
     "babel-cli": "^6.18.0",
     "express": "^4.14.0",
     "socket.io": "^1.5.1",
-    "rxjs": "^5.0.0-beta.12"
+    "socket.io-client": "^1.5.1",
+    "rxjs": "^5.0.0-beta.12",
+    "webpack": "^1.13.3",
+    "webpack-dev-middleware": "^1.8.4"
   },
   "eslintConfig": {
     "extends": "airbnb-base",
@@ -28,6 +31,8 @@
   },
   "devDependencies": {
     "babel-eslint": "^7.0.0",
+    "babel-loader": "^6.2.7",
+    "babel-polyfill": "^6.16.0",
     "babel-preset-latest": "^6.16.0",
     "babel-preset-react": "^6.16.0",
     "babel-preset-stage-0": "^6.16.0",
